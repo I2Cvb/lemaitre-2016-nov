@@ -40,15 +40,15 @@ dce_norm = StandardTimeNormalization(DCEModality())
 for pat_dce, pat_gt in zip(path_patients_list_dce, path_patients_list_gt):
     # Read the DCE
     dce_mod = DCEModality()
-    dce_mod.read_data_from_path(path_dce)
+    dce_mod.read_data_from_path(pat_dce)
 
     # Read the GT
     gt_mod = GTModality()
-    gt_mod.read_data_from_path(label_gt, path_gt)
+    gt_mod.read_data_from_path(label_gt, pat_gt)
 
     # Fit the model
     dce_norm.partial_fit_model(dce_mod, ground_truth=gt_mod,
-                           cat='prostate')
+                               cat=label_gt[0])
 
 # Define the path where to store the model
 path_store_model = '/data/prostate/pre-processing/lemaitre-2016-nov/model'
