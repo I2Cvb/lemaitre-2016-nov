@@ -49,8 +49,8 @@ def find_normalization_params(pat_dce, pat_gt, label, pat_model):
 path_patients_list_dce = []
 path_patients_list_gt = []
 # Create the generator
-id_patient_list = (name for name in os.listdir(path_patients)
-                   if os.path.isdir(os.path.join(path_patients, name)))
+id_patient_list = [name for name in os.listdir(path_patients)
+                   if os.path.isdir(os.path.join(path_patients, name))]
 for id_patient in id_patient_list:
     # Append for the DCE data
     path_patients_list_dce.append(os.path.join(path_patients, id_patient,
