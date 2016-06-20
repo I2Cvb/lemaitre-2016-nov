@@ -17,7 +17,7 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from unbalanced_dataset import OneSidedSelection
+from unbalanced_dataset.under_sampling import OneSidedSelection
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'

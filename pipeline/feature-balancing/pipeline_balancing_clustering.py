@@ -17,7 +17,7 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from unbalanced_dataset import ClusterCentroids
+from unbalanced_dataset.under_sampling import ClusterCentroids
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'

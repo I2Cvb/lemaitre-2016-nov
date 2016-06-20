@@ -17,7 +17,7 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from unbalanced_dataset import OverSampler
+from unbalanced_dataset.over_sampling import RandomOverSampler
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -95,10 +95,10 @@ for idx_pat, (data_pat, label_pat) in enumerate(zip(data, label)):
     print 'Balanced the set #{}'.format(idx_pat+1)
 
     # Balanced the set
-    os = OverSampler(verbose=True)
+    ros = OverSampler(verbose=True)
 
     # Under-sample the data
-    data_b, label_b = os.fit_transform(data[idx_pat], label[idx_pat])
+    data_b, label_b = ros.fit_transform(data[idx_pat], label[idx_pat])
 
     # Append the balanced data and label
     data_balanced.append(data_b)
