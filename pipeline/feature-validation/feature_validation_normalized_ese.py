@@ -16,6 +16,7 @@ from sklearn.externals import joblib
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
+from sklearn.metrics import roc_auc_score
 
 from protoclass.data_management import GTModality
 
@@ -71,8 +72,8 @@ config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
           #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
           #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
           {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
+          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
+          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
           #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
 
 testing_label_config = []
@@ -93,6 +94,72 @@ for c in config:
 
 # Load the results
 result_config = joblib.load(filename_results)
+
+# # Go for each configuration
+# for idx_c, (result_cv, gt_label_cv) in enumerate(zip(result_config,
+#                                                    testing_label_config)):
+
+#     # Print the information about the predictor
+#     print 'The current configuration is: {}'.format(config[idx_c])
+
+#     # Initialise a list for the sensitivity and specificity
+#     sens_list = []
+#     spec_list = []
+
+#     # Initilise the mean roc
+#     mean_tpr = 0.0
+#     mean_fpr = np.linspace(0, 1, 100)
+
+#     # Create an handle for the figure
+#     fig = plt.figure()
+#     ax = fig.add_subplot(111)
+
+#     gt_arr = np.array([])
+#     res_arr = np.array([])
+#     prob_arr = np.empty([0, 2])
+#     # Go for each cross-validation iteration
+#     for idx_cv, (res_itr, gt_itr) in enumerate(zip(result_cv, gt_label_cv)):
+
+#         # Print the information about the iteration in the cross-validation
+#         print 'Iteration #{} of the cross-validation'.format(idx_cv+1)
+
+#         # Concatenate the data
+#         gt_arr = np.append(gt_arr, gt_itr)
+#         res_arr = np.append(res_arr,
+#                             res_itr[0])
+#         prob_arr = np.append(prob_arr,
+#                              res_itr[1],
+#                              axis=0)
+
+
+#     # Compute some metrics
+#     sens, spec = labels_to_sensitivity_specificity(
+#         gt_arr,
+#         res_arr)
+#     sens *= 100.
+#     spec *= 100.
+
+#     print 'Sensitivity: {}, Specificity: {}'.format(sens, spec)
+
+#     fpr, tpr, thresholds = roc_curve(gt_arr, prob_arr[:, 1])
+#     roc_auc = roc_auc_score(gt_arr, prob_arr[:, 1])
+#     ax.plot(fpr, tpr,
+#             label='- AUC = {:1.4f}'.format(roc_auc), lw=2)
+
+#     plt.xlim([-0.05, 1.05])
+#     plt.ylim([-0.05, 1.05])
+#     plt.xlabel('False Positive Rate')
+#     plt.ylabel('True Positive Rate')
+#     plt.title('Receiver operating characteristic example')
+
+#     handles, labels = ax.get_legend_handles_labels()
+#     lgd = ax.legend(handles, labels, loc='lower right',
+#                     bbox_to_anchor=(1.65, -0.1))
+#     # Save the plot
+#     plt.savefig('config_normalized_{}.png'.format(idx_c),
+#                 bbox_extra_artists=(lgd,),
+#                 bbox_inches='tight')
+
 
 # Go for each configuration
 for idx_c, (result_cv, gt_label_cv) in enumerate(zip(result_config,
