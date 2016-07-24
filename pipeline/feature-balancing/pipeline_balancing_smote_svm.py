@@ -1,5 +1,5 @@
 """
-This pipeline aimed at creating balanced set using random easy ensemble
+This pipeline aimed at creating balanced set using SMOTE
 approach.
 """
 
@@ -17,7 +17,7 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from imblearn.ensemble import EasyEnsemble
+from imblearn.over_sampling import SMOTE
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -30,7 +30,7 @@ label_gt = ['prostate', 'pz', 'cg', 'cap']
 # Define the path to the normalization parameters
 path_norm = '/data/prostate/pre-processing/lemaitre-2016-nov/norm-objects'
 # Define the path where to store the data
-path_store = '/data/prostate/balanced/lemaitre-2016-nov/easy-ensemble'
+path_store = '/data/prostate/balanced/lemaitre-2016-nov/smote-svm'
 if not os.path.exists(path_store):
     os.makedirs(path_store)
 
@@ -95,10 +95,10 @@ for idx_pat, (data_pat, label_pat) in enumerate(zip(data, label)):
     print 'Balanced the set #{}'.format(idx_pat+1)
 
     # Balanced the set
-    ee = EasyEnsemble()
+    sm = SMOTE(kind='svm')
 
     # Under-sample the data
-    data_b, label_b = ee.fit_transform(data[idx_pat], label[idx_pat])
+    data_b, label_b = sm.fit_transform(data[idx_pat], label[idx_pat])
 
     # Append the balanced data and label
     data_balanced.append(data_b)

@@ -17,12 +17,12 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from unbalanced_dataset.under_sampling import RandomUnderSampler
+from imblearn.under_sampling import RandomUnderSampler
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
 # Define the path of the modality to normalize
-path_dce = 'DCE'
+path_dce = 'DCE_reg_bspline'
 # Define the path of the ground for the prostate
 path_gt = ['GT_inv/prostate', 'GT_inv/pz', 'GT_inv/cg', 'GT_inv/cap']
 # Define the label of the ground-truth which will be provided
@@ -95,7 +95,7 @@ for idx_pat, (data_pat, label_pat) in enumerate(zip(data, label)):
     print 'Balanced the set #{}'.format(idx_pat+1)
 
     # Balanced the set
-    us = UnderSampler(verbose=True)
+    us = RandomUnderSampler()
 
     # Under-sample the data
     data_b, label_b = us.fit_transform(data[idx_pat], label[idx_pat])
