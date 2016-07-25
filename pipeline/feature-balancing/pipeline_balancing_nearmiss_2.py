@@ -98,7 +98,7 @@ for idx_pat, (data_pat, label_pat) in enumerate(zip(data, label)):
     nm2 = NearMiss(version=2)
 
     # Under-sample the data
-    data_b, label_b = nm2.fit_transform(data[idx_pat], label[idx_pat])
+    data_b, label_b = nm2.fit_sample(data[idx_pat], label[idx_pat])
 
     # Append the balanced data and label
     data_balanced.append(data_b)

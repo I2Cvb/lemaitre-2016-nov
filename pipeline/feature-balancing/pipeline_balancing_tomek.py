@@ -17,7 +17,7 @@ from protoclass.preprocessing import StandardTimeNormalization
 
 from protoclass.extraction import EnhancementSignalExtraction
 
-from imblearn import TomekLinks
+from imblearn.under_sampling import TomekLinks
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -98,7 +98,7 @@ for idx_pat, (data_pat, label_pat) in enumerate(zip(data, label)):
     tl = TomekLinks()
 
     # Under-sample the data
-    data_b, label_b = tl.fit_transform(data[idx_pat], label[idx_pat])
+    data_b, label_b = tl.fit_sample(data[idx_pat], label[idx_pat])
 
     # Append the balanced data and label
     data_balanced.append(data_b)
