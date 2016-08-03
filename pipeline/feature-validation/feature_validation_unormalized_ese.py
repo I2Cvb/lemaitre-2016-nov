@@ -22,7 +22,7 @@ from protoclass.data_management import GTModality
 from protoclass.validation import labels_to_sensitivity_specificity
 
 # Define the filename where the results are stored
-path_results = '/data/prostate/results/lemaitre-2016-nov'
+path_results = '/data/prostate/results/lemaitre-2016-nov/unormalised-no-balancing'
 filename_results = os.path.join(path_results, 'results_unormalized_ese.pkl')
 
 # Define the path where all the patients are
@@ -71,8 +71,8 @@ config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
           #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
           #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
           {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
+          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
+          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
           #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
 
 testing_label_config = []

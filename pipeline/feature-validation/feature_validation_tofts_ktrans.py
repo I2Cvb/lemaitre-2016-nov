@@ -24,7 +24,7 @@ from protoclass.validation import labels_to_sensitivity_specificity
 
 # Define the filename where the results are stored
 path_results = '/data/prostate/results/lemaitre-2016-nov'
-filename_results = os.path.join(path_results, 'no-balancing/results_normalized_ese.pkl')
+filename_results = os.path.join(path_results, 'tofts-ktrans-patient-aif/results_normalized_ese.pkl')
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -229,6 +229,6 @@ for idx_c, (result_cv, gt_label_cv) in enumerate(zip(result_config,
     lgd = ax.legend(handles, labels, loc='lower right',
                     bbox_to_anchor=(1.65, -0.1))
     # Save the plot
-    plt.savefig('config_normalized_{}.png'.format(idx_c),
+    plt.savefig('tofts_ktrans_PAIF{}.png'.format(idx_c),
                 bbox_extra_artists=(lgd,),
                 bbox_inches='tight')

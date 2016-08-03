@@ -21,7 +21,7 @@ from protoclass.classification import Classify
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
 # Define the path of the modality to normalize
-path_dce = 'DCE'
+path_dce = 'DCE_reg_bspline'
 # Define the path of the ground for the prostate
 path_gt = ['GT_inv/prostate', 'GT_inv/pz', 'GT_inv/cg', 'GT_inv/cap']
 # Define the label of the ground-truth which will be provided
@@ -90,8 +90,8 @@ config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
           #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
           #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
           {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
+          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
+          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
           #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
 
 result_config = []
@@ -131,7 +131,7 @@ for c in config:
     result_config.append(result_cv)
 
 # Save the information
-path_store = '/data/prostate/results/lemaitre-2016-nov'
+path_store = '/data/prostate/results/lemaitre-2016-nov/no-balancing'
 if not os.path.exists(path_store):
     os.makedirs(path_store)
 joblib.dump(result_config, os.path.join(path_store,
