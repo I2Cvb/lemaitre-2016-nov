@@ -60,7 +60,7 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     gt_mod.read_data_from_path(label_gt, p_gt)
 
     # Fit the parameters for Brix
-    print 'Extract ToftsBrix'
+    print 'Extract Hoffmann'
     brix_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
 
     # Extract the matrix

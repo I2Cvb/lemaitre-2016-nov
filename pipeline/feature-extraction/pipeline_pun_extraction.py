@@ -1,5 +1,5 @@
 """
-This pipeline is used to find the extract the Tofts parameters
+This pipeline is used to find the extract the PUN parameters
 and saved the data in a matrix.
 """
 
@@ -12,7 +12,7 @@ from joblib import Parallel, delayed
 from protoclass.data_management import DCEModality
 from protoclass.data_management import GTModality
 
-from protoclass.extraction import BrixQuantificationExtraction
+from protoclass.extraction import PUNQuantificationExtraction
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -25,7 +25,7 @@ label_gt = ['prostate']
 # Define the filename for the model
 pt_mdl = '/data/prostate/pre-processing/lemaitre-2016-nov/model/model_stn.npy'
 # Define the path to store the Tofts data
-path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/brix-features'
+path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/pun-features'
 
 # Generate the different path to be later treated
 path_patients_list_dce = []
@@ -47,7 +47,7 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     print 'Processing patient #{}'.format(pat)
 
     # Create the Tofts Extractor
-    brix_ext = BrixQuantificationExtraction(DCEModality())
+    pun_ext = PUNQuantificationExtraction(DCEModality())
 
     # Read the DCE
     print 'Read DCE images'
@@ -60,13 +60,13 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     gt_mod.read_data_from_path(label_gt, p_gt)
 
     # Fit the parameters for Brix
-    print 'Extract Brix'
-    brix_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    print 'Extract Weibull'
+    pun_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
 
     # Extract the matrix
     print 'Extract the feature matrix'
-    data = brix_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    data = pun_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
 
-    pat_chg = pat.lower().replace(' ', '_') + '_brix.npy'
+    pat_chg = pat.lower().replace(' ', '_') + '_pun.npy'
     filename = os.path.join(path_store, pat_chg)
     np.save(filename, data)
