@@ -12,6 +12,8 @@ from joblib import Parallel, delayed
 from protoclass.data_management import DCEModality
 from protoclass.data_management import GTModality
 
+from protoclass.preprocessing import StandardTimeNormalization
+
 from protoclass.extraction import ToftsQuantificationExtraction
 
 # Define the path where all the patients are
@@ -24,8 +26,10 @@ path_gt = 'GT_inv/prostate'
 label_gt = ['prostate']
 # Define the filename for the model
 pt_mdl = '/data/prostate/pre-processing/lemaitre-2016-nov/model/model_stn.npy'
+# Define the path to the normalization parameters
+path_norm = '/data/prostate/pre-processing/lemaitre-2016-nov/norm-objects'
 # Define the path to store the Tofts data
-path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features'
+path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features-patient-aif-normalized'
 
 # Parameters for Tofts quantization
 T10 = 1.6
@@ -68,9 +72,17 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     gt_mod = GTModality()
     gt_mod.read_data_from_path(label_gt, p_gt)
 
+    # Load the approproate normalization object
+    filename_norm = (pat.lower().replace(' ', '_') +
+                     '_norm.p')
+    dce_norm = StandardTimeNormalization.load_from_pickles(
+        os.path.join(path_norm, filename_norm))
+
+    dce_mod = dce_norm.normalize(dce_mod)
+
     # Fit the parameters for Tofts
     print 'Extract Tofts parameters'
-    tofts_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0], fit_aif=False)
+    tofts_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0], fit_aif=True)
 
     # Extract the matrix
     print 'Extract the feature matrix'
