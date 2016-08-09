@@ -71,6 +71,13 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
 
     dce_mod = dce_norm.normalize(dce_mod)
 
+    # Add a shift to all the data to not have any issue during fitting with
+    # the exponential
+    # Check if the minimum is negative
+    if np.min(dce_mod.data_) < 0:
+        dce_mod.data_ -= np.min(dce_mod.data_)
+        dce_mod.update_histogram()
+
     # Fit the parameters for Brix
     print 'Extract Weibull'
     pun_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
