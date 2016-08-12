@@ -12,6 +12,8 @@ from joblib import Parallel, delayed
 from protoclass.data_management import DCEModality
 from protoclass.data_management import GTModality
 
+from protoclass.preprocessing import StandardTimeNormalization
+
 from protoclass.extraction import ToftsQuantificationExtraction
 
 # Define the path where all the patients are
@@ -24,8 +26,10 @@ path_gt = 'GT_inv/prostate'
 label_gt = ['prostate']
 # Define the filename for the model
 pt_mdl = '/data/prostate/pre-processing/lemaitre-2016-nov/model/model_stn.npy'
+# Define the path to the normalization parameters
+path_norm = '/data/prostate/pre-processing/lemaitre-2016-nov/norm-objects'
 # Define the path to store the Tofts data
-path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features'
+path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features-normalized'
 
 # Parameters for Tofts quantization
 T10 = 1.6
@@ -68,15 +72,31 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     gt_mod = GTModality()
     gt_mod.read_data_from_path(label_gt, p_gt)
 
+    # Load the approproate normalization object
+    filename_norm = (pat.lower().replace(' ', '_') +
+                     '_norm.p')
+    dce_norm = StandardTimeNormalization.load_from_pickles(
+        os.path.join(path_norm, filename_norm))
+
+    dce_mod = dce_norm.normalize(dce_mod)
+
+    # Add a shift to all the data to not have any issue during fitting with
+    # the exponential
+    # Check if the minimum is negative
+    if np.min(dce_mod.data_) < 0:
+        dce_mod.data_ -= np.min(dce_mod.data_)
+        dce_mod.update_histogram()
+
     # Fit the parameters for Tofts
     print 'Extract Tofts parameters'
-    aif_params = [(2.07585701e+00, 2.17245943e+01),
-                  (9.71914591e+00, 2.67856023e+00),
-                  (1.20951607e+00, 5.54979318e+01),
-                  9.48032875e-02,
-                  8.85707930e-05,
-                  3.63258239e-02,
-                  6.12675960e+01,
+
+    aif_params = [(2.07149091e+00, 2.17230025e+01),
+                  (9.72270021e+00, 2.65991086e+00),
+                  (1.20972869e+00, 5.55108421e+01),
+                  9.48135519e-02,
+                  8.92495798e-05,
+                  3.63079733e-02,
+                  6.12571259e+01,
                   3]
     tofts_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0], fit_aif=False,
                   aif_params=aif_params)
