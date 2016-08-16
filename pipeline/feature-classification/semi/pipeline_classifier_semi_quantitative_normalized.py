@@ -1,5 +1,6 @@
 """
-This pipeline is used to classify Hoffmann parameters.
+This pipeline is used to classify semi-quantitative parameters and normalized
+signal.
 """
 
 import os
@@ -21,7 +22,7 @@ path_gt = ['GT_inv/prostate', 'GT_inv/pz', 'GT_inv/cg', 'GT_inv/cap']
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate', 'pz', 'cg', 'cap']
 # Define the path to the normalization parameters
-path_hoffmann = '/data/prostate/pre-processing/lemaitre-2016-nov/hoffmann-features'
+path_hoffmann = '/data/prostate/pre-processing/lemaitre-2016-nov/semi-features-normalized'
 
 # Generate the different path to be later treated
 path_patients_list_gt = []
@@ -48,7 +49,7 @@ for idx_pat in range(len(id_patient_list)):
 
     # Load the approproate normalization object
     filename_hoffmann = (id_patient_list[idx_pat].lower().replace(' ', '_') +
-                      '_hoffmann.npy')
+                      '_semi.npy')
 
     # Concatenate the training data
     data.append(np.load(os.path.join(path_hoffmann, filename_hoffmann)))
@@ -84,6 +85,7 @@ for c in config:
 
         # Get the testing data
         testing_data = data[idx_lopo_cv]
+        testing_data = np.nan_to_num(testing_data)
         testing_label = label_binarize(label[idx_lopo_cv], [0, 255])
         print 'Create the testing set ...'
 
@@ -94,6 +96,7 @@ for c in config:
                          if idx_arr != idx_lopo_cv]
         # Concatenate the data
         training_data = np.vstack(training_data)
+        training_data = np.nan_to_num(training_data)
         training_label = label_binarize(np.hstack(training_label).astype(int),
                                         [0, 255])
         print 'Create the training set ...'
@@ -108,7 +111,7 @@ for c in config:
     result_config.append(result_cv)
 
 # Save the information
-path_store = '/data/prostate/results/lemaitre-2016-nov/hoffmann'
+path_store = '/data/prostate/results/lemaitre-2016-nov/semi-normalized'
 if not os.path.exists(path_store):
     os.makedirs(path_store)
 joblib.dump(result_config, os.path.join(path_store,

@@ -1,5 +1,5 @@
 """
-This pipeline is used to classify Brix parameters.
+This pipeline is used to classify Hoffmann parameters.
 """
 
 import os
@@ -21,7 +21,7 @@ path_gt = ['GT_inv/prostate', 'GT_inv/pz', 'GT_inv/cg', 'GT_inv/cap']
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate', 'pz', 'cg', 'cap']
 # Define the path to the normalization parameters
-path_brix = '/data/prostate/pre-processing/lemaitre-2016-nov/brix-features'
+path_hoffmann = '/data/prostate/pre-processing/lemaitre-2016-nov/hoffmann-features'
 
 # Generate the different path to be later treated
 path_patients_list_gt = []
@@ -47,11 +47,12 @@ for idx_pat in range(len(id_patient_list)):
     print 'Read the GT data for the current patient ...'
 
     # Load the approproate normalization object
-    filename_brix = (id_patient_list[idx_pat].lower().replace(' ', '_') +
-                      '_brix.npy')
+    filename_hoffmann = (id_patient_list[idx_pat].lower().replace(' ', '_') +
+                      '_hoffmann.npy')
 
     # Concatenate the training data
-    data.append(np.load(os.path.join(path_brix, filename_brix)))
+    # Select the parameter kep
+    data.append(np.load(os.path.join(path_hoffmann, filename_hoffmann))[:, 2])
     # Extract the corresponding ground-truth for the testing data
     # Get the index corresponding to the ground-truth
     roi_prostate = gt_mod.extract_gt_data('prostate', output_type='index')
@@ -83,7 +84,8 @@ for c in config:
         print 'Round #{} of the LOPO-CV'.format(idx_lopo_cv + 1)
 
         # Get the testing data
-        testing_data = data[idx_lopo_cv]
+        testing_data = np.atleast_2d(data[idx_lopo_cv]).T
+        testing_data = np.nan_to_num(testing_data)
         testing_label = label_binarize(label[idx_lopo_cv], [0, 255])
         print 'Create the testing set ...'
 
@@ -93,7 +95,8 @@ for c in config:
         training_label = [arr for idx_arr, arr in enumerate(label)
                          if idx_arr != idx_lopo_cv]
         # Concatenate the data
-        training_data = np.vstack(training_data)
+        training_data = np.atleast_2d(np.hstack(training_data)).T
+        training_data = np.nan_to_num(training_data)
         training_label = label_binarize(np.hstack(training_label).astype(int),
                                         [0, 255])
         print 'Create the training set ...'
@@ -108,7 +111,7 @@ for c in config:
     result_config.append(result_cv)
 
 # Save the information
-path_store = '/data/prostate/results/lemaitre-2016-nov/brix'
+path_store = '/data/prostate/results/lemaitre-2016-nov/hoffmann-kep'
 if not os.path.exists(path_store):
     os.makedirs(path_store)
 joblib.dump(result_config, os.path.join(path_store,
