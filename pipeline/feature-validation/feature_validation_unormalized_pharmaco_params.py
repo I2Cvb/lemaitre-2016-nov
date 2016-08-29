@@ -83,14 +83,7 @@ for idx_pat in range(len(id_patient_list)):
 
 n_jobs = 48
 config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
-           'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 3, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
-          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
-          #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
+           'gs_n_jobs': n_jobs}]
 
 testing_label_config = []
 for c in config:
@@ -131,10 +124,6 @@ for fresults in filename_results:
 
         # Print the information about the predictor
         print 'The current configuration is: {}'.format(config[idx_c])
-
-        # # Initialise a list for the sensitivity and specificity
-        # sens_list = []
-        # spec_list = []
 
         # Initilise the mean roc
         mean_tpr = []
@@ -185,41 +174,16 @@ for idx_c, j in enumerate(range(len(config))):
         ax.fill_between(mean_fpr, method_tpr_mean[i][j]+method_tpr_std[i][j],
                         method_tpr_mean[i][j]-method_tpr_std[i][j],
                         facecolor=current_palette[i], alpha=0.2)
-        # ax.errorbar(mean_fpr, method_tpr_mean[i][j], yerr=method_tpr_std[i][j])
 
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic example')
 
     handles, labels = ax.get_legend_handles_labels()
     lgd = ax.legend(handles, labels, loc='lower right')#,
                     #bbox_to_anchor=(1.4, 0.1))
     # Save the plot
-    plt.savefig('unormalized_methods_{}.pdf'.format(idx_c),
+    plt.savefig('results/unormalized_methods_{}.pdf'.format(idx_c),
                 bbox_extra_artists=(lgd,),
                 bbox_inches='tight')
-
-
-        # # Plot the mean ROC
-        # mean_tpr /= len(result_cv)
-        # mean_tpr[-1] = 1.0
-
-        # mean_auc = auc(mean_fpr, mean_tpr)
-        # ax.plot(mean_fpr, mean_tpr, 'k--',
-        #         label='Mean ROC  - AUC = {:1.4f}'.format(mean_auc), lw=2)
-
-        # plt.xlim([-0.05, 1.05])
-        # plt.ylim([-0.05, 1.05])
-        # plt.xlabel('False Positive Rate')
-        # plt.ylabel('True Positive Rate')
-        # plt.title('Receiver operating characteristic example')
-
-        # handles, labels = ax.get_legend_handles_labels()
-        # lgd = ax.legend(handles, labels, loc='lower right',
-        #                 bbox_to_anchor=(1.65, -0.1))
-        # # Save the plot
-        # plt.savefig('semi_norm{}.png'.format(idx_c),
-        #             bbox_extra_artists=(lgd,),
-        #             bbox_inches='tight')

@@ -111,7 +111,7 @@ TR = dce_mod.metadata_['TR']
 start_enh = 3
 
 # Compute the relative enhancement post-contrast / pre-contrast
-s_rel = aif_patient_avg / np.mean(aif_patient[:start_enh])
+s_rel = aif_patient_avg / np.min(aif_patient_avg[:start_enh])
 
 # Compute the numerator
 A = (np.exp(-2. * TR / T10) *
@@ -122,7 +122,7 @@ A = (np.exp(-2. * TR / T10) *
 B = (np.exp(-TR / T10) *
      (np.cos(flip_angle_rad) - s_rel) + s_rel - 1.)
 
-cb_t = np.abs((1. / (TR * r1)) * np.log(A / B))
+cb_t = np.abs((1. / (TR * r1)) * np.log(np.abs(A / B)))
 
 init_params = [48.54, 19.8, 10.2276, 21.9, 3.378, 7.92, 1.050, 0.0028083,
                0.63463, 28.98, start_enh]

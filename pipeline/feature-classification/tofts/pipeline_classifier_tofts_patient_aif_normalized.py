@@ -53,7 +53,7 @@ for idx_pat in range(len(id_patient_list)):
                       '_tofts.npy')
 
     # Concatenate the training data
-    data.append(np.load(os.path.join(path_tofts, filename_tofts)))
+    data.append(np.load(os.path.join(path_tofts, filename_tofts))[:, :-1])
     # Extract the corresponding ground-truth for the testing data
     # Get the index corresponding to the ground-truth
     roi_prostate = gt_mod.extract_gt_data('prostate', output_type='index')
@@ -64,14 +64,7 @@ for idx_pat in range(len(id_patient_list)):
 
 n_jobs = 48
 config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
-           'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 3, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
-          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
-          #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
+           'gs_n_jobs': n_jobs}]
 
 result_config = []
 for c in config:

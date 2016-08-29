@@ -85,14 +85,7 @@ for idx_pat in range(len(id_patient_list)):
 
 n_jobs = 48
 config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
-           'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 3, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 5, 'gs_n_jobs': n_jobs},
-          #{'classifier_str': 'knn', 'n_neighbors': 7, 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'naive-bayes', 'gs_n_jobs': n_jobs},
-          {'classifier_str': 'logistic-regression', 'gs_n_jobs': n_jobs}]
-          #{'classifier_str': 'linear-svm', 'gs_n_jobs' : n_jobs}]
-          #{'classifier_str': 'kernel-svm', 'gs_n_jobs' : n_jobs}]
+           'gs_n_jobs': n_jobs}]
 
 result_config = []
 for c in config:
