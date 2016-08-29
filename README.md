@@ -1,4 +1,4 @@
-A novel normalization approach for DCE-MRI applied to the prostate cancer detection
+Automatic prostate cancer detection through DCE-MRI images: all you need is a good normalization
 ===================================================================================
 
 How to use the pipeline?
