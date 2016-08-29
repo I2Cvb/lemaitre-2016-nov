@@ -41,6 +41,18 @@ path_gt = 'GT_inv/prostate'
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate']
 
+# Shift corresponding to the maximum shift obtained during the normalization
+shift = np.array([233.33757962, 239.33121019, 242.32802548, 243.32696391,
+                  247.32271762, 296.5, 376.66851169, 443.50369004,
+                  468.44218942, 476.42250923, 487.39544895, 501.36100861,
+                  510.33886839, 517.32164822, 522.30934809, 533.28228782,
+                  539.26752768, 539.26752768, 539.26752768, 540.26506765,
+                  550.2404674, 557.22324723, 557.22324723, 556.22570726,
+                  556.22570726, 555.22816728, 556.99363057, 556.99363057,
+                  556.99363057, 556.99363057, 556.99363057, 556.99363057,
+                  556.99363057, 556.99363057, 556.99363057, 557.992569,
+                  558.99150743, 558.99150743, 557.992569, 556.99363057])
+
 # Generate the different path to be later treated
 path_patients_list_dce = []
 path_patients_list_gt = []
@@ -66,12 +78,10 @@ for pat_dce, pat_gt in zip(path_patients_list_dce, path_patients_list_gt):
     dce_mod = DCEModality()
     dce_mod.read_data_from_path(pat_dce)
 
-    # Add a shift to all the data to not have any issue during fitting with
-    # the exponential
-    # Check if the minimum is negative
-    if np.min(dce_mod.data_) < 0:
-        dce_mod.data_ -= np.min(dce_mod.data_)
-        dce_mod.update_histogram()
+    for idx in range(dce_mod.data_.shape[0]):
+        dce_mod.data_[idx, :] += shift[idx]
+
+    dce_mod.update_histogram()
 
     # Store the time
     aif_time.append(dce_mod.time_info_)

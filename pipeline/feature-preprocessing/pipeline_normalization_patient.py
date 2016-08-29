@@ -59,7 +59,7 @@ for id_patient in id_patient_list:
     path_patients_list_gt.append([os.path.join(path_patients, id_patient,
                                                path_gt)])
 
-dce_norm_list = Parallel(n_jobs=9)(delayed(find_normalization_params)(p_dce,
+dce_norm_list = Parallel(n_jobs=4)(delayed(find_normalization_params)(p_dce,
                                                                       p_gt,
                                                                       label_gt,
                                                                       pt_mdl)

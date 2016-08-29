@@ -14,6 +14,7 @@ from protoclass.data_management import GTModality
 
 from protoclass.extraction import ToftsQuantificationExtraction
 
+# Define the bi-exponential function used to fit the AIF signal
 def fit_fun(t, A1, A2, T1, T2, sigma1, sigma2, alpha, beta, s, tau, delay):
     cb_t = np.zeros(t.shape)
     for idx_t in range(cb_t.size):
@@ -91,6 +92,7 @@ T10 = 1.6
 r1 = 3.5
 TR = dce_mod.metadata_['TR']
 
+# Take the average of the 3 first value to estimate the baseline intensity
 start_enh = 3
 
 # Compute the relative enhancement post-contrast / pre-contrast
