@@ -24,12 +24,22 @@ path_dce = 'DCE_reg_bspline'
 path_gt = 'GT_inv/prostate'
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate']
-# Define the filename for the model
-pt_mdl = '/data/prostate/pre-processing/lemaitre-2016-nov/model/model_stn.npy'
 # Define the path to the normalization parameters
 path_norm = '/data/prostate/pre-processing/lemaitre-2016-nov/norm-objects'
 # Define the path to store the Tofts data
 path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/semi-features-normalized'
+
+# Define the shift to apply to the normalized data
+shift = np.array([233.33757962, 239.33121019, 242.32802548, 243.32696391,
+                  247.32271762, 296.5, 376.66851169, 443.50369004,
+                  468.44218942, 476.42250923, 487.39544895, 501.36100861,
+                  510.33886839, 517.32164822, 522.30934809, 533.28228782,
+                  539.26752768, 539.26752768, 539.26752768, 540.26506765,
+                  550.2404674, 557.22324723, 557.22324723, 556.22570726,
+                  556.22570726, 555.22816728, 556.99363057, 556.99363057,
+                  556.99363057, 556.99363057, 556.99363057, 556.99363057,
+                  556.99363057, 556.99363057, 556.99363057, 557.992569,
+                  558.99150743, 558.99150743, 557.992569, 556.99363057])
 
 # Generate the different path to be later treated
 path_patients_list_dce = []
@@ -48,7 +58,7 @@ for id_patient in id_patient_list:
 for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
                             id_patient_list):
 
-    print 'Processing patient #{}'.format(pat)
+    print 'Processing #{}'.format(pat)
 
     # Create the Tofts Extractor
     semi_ext = SemiQuantificationExtraction(DCEModality())
@@ -70,13 +80,10 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
         os.path.join(path_norm, filename_norm))
 
     dce_mod = dce_norm.normalize(dce_mod)
+    for idx in range(dce_mod.data_.shape[0]):
+        dce_mod.data_[idx, :] += shift[idx]
 
-    # Add a shift to all the data to not have any issue during fitting with
-    # the exponential
-    # Check if the minimum is negative
-    if np.min(dce_mod.data_) < 0:
-        dce_mod.data_ -= np.min(dce_mod.data_)
-        dce_mod.update_histogram()
+    dce_mod.update_histogram()
 
     # Fit the parameters for Semi
     print 'Extract Semi'

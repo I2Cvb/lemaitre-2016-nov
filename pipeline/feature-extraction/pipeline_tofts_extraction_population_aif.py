@@ -12,7 +12,7 @@ from joblib import Parallel, delayed
 from protoclass.data_management import DCEModality
 from protoclass.data_management import GTModality
 
-from protoclass.extraction import SemiQuantificationExtraction
+from protoclass.extraction import ToftsQuantificationExtraction
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -23,7 +23,11 @@ path_gt = 'GT_inv/prostate'
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate']
 # Define the path to store the Tofts data
-path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/semi-features'
+path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features'
+
+# Parameters for Tofts quantization
+T10 = 1.6
+CA = 3.5
 
 # Generate the different path to be later treated
 path_patients_list_dce = []
@@ -45,7 +49,7 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     print 'Processing #{}'.format(pat)
 
     # Create the Tofts Extractor
-    semi_ext = SemiQuantificationExtraction(DCEModality())
+    tofts_ext = ToftsQuantificationExtraction(DCEModality(), T10, CA)
 
     # Read the DCE
     print 'Read DCE images'
@@ -57,14 +61,23 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     gt_mod = GTModality()
     gt_mod.read_data_from_path(label_gt, p_gt)
 
-    # Fit the parameters for Semi
-    print 'Extract Semi'
-    semi_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    # Fit the parameters for Tofts
+    print 'Extract Tofts parameters'
+    aif_params = [(2.07585701e+00, 2.17245943e+01),
+                  (9.71914591e+00, 2.67856023e+00),
+                  (1.20951607e+00, 5.54979318e+01),
+                  9.48032875e-02,
+                  8.85707930e-05,
+                  3.63258239e-02,
+                  6.12675960e+01,
+                  3]
+    tofts_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0], fit_aif=False,
+                  aif_params=aif_params)
 
     # Extract the matrix
     print 'Extract the feature matrix'
-    data = semi_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    data = tofts_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
 
-    pat_chg = pat.lower().replace(' ', '_') + '_semi.npy'
+    pat_chg = pat.lower().replace(' ', '_') + '_tofts.npy'
     filename = os.path.join(path_store, pat_chg)
     np.save(filename, data)

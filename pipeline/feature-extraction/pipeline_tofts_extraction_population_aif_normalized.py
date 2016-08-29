@@ -14,7 +14,7 @@ from protoclass.data_management import GTModality
 
 from protoclass.preprocessing import StandardTimeNormalization
 
-from protoclass.extraction import BrixQuantificationExtraction
+from protoclass.extraction import ToftsQuantificationExtraction
 
 # Define the path where all the patients are
 path_patients = '/data/prostate/experiments'
@@ -27,7 +27,7 @@ label_gt = ['prostate']
 # Define the path to the normalization parameters
 path_norm = '/data/prostate/pre-processing/lemaitre-2016-nov/norm-objects'
 # Define the path to store the Tofts data
-path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/brix-features-normalized'
+path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features-normalized'
 
 # Define the shift to apply to the normalized data
 shift = np.array([233.33757962, 239.33121019, 242.32802548, 243.32696391,
@@ -40,6 +40,10 @@ shift = np.array([233.33757962, 239.33121019, 242.32802548, 243.32696391,
                   556.99363057, 556.99363057, 556.99363057, 556.99363057,
                   556.99363057, 556.99363057, 556.99363057, 557.992569,
                   558.99150743, 558.99150743, 557.992569, 556.99363057])
+
+# Parameters for Tofts quantization
+T10 = 1.6
+CA = 3.5
 
 # Generate the different path to be later treated
 path_patients_list_dce = []
@@ -61,7 +65,7 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
     print 'Processing #{}'.format(pat)
 
     # Create the Tofts Extractor
-    brix_ext = BrixQuantificationExtraction(DCEModality())
+    tofts_ext = ToftsQuantificationExtraction(DCEModality(), T10, CA)
 
     # Read the DCE
     print 'Read DCE images'
@@ -86,14 +90,24 @@ for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
 
     dce_mod.update_histogram()
 
-    # Fit the parameters for Brix
-    print 'Extract Brix'
-    brix_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    # Fit the parameters for Tofts
+    print 'Extract Tofts parameters'
+
+    aif_params = [(2.07149091e+00, 2.17230025e+01),
+                  (9.72270021e+00, 2.65991086e+00),
+                  (1.20972869e+00, 5.55108421e+01),
+                  9.48135519e-02,
+                  8.92495798e-05,
+                  3.63079733e-02,
+                  6.12571259e+01,
+                  3]
+    tofts_ext.fit(dce_mod, ground_truth=gt_mod, cat=label_gt[0], fit_aif=False,
+                  aif_params=aif_params)
 
     # Extract the matrix
     print 'Extract the feature matrix'
-    data = brix_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
+    data = tofts_ext.transform(dce_mod, ground_truth=gt_mod, cat=label_gt[0])
 
-    pat_chg = pat.lower().replace(' ', '_') + '_brix.npy'
+    pat_chg = pat.lower().replace(' ', '_') + '_tofts.npy'
     filename = os.path.join(path_store, pat_chg)
     np.save(filename, data)

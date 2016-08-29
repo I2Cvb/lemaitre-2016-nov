@@ -22,8 +22,6 @@ path_dce = 'DCE_reg_bspline'
 path_gt = 'GT_inv/prostate'
 # Define the label of the ground-truth which will be provided
 label_gt = ['prostate']
-# Define the filename for the model
-pt_mdl = '/data/prostate/pre-processing/lemaitre-2016-nov/model/model_stn.npy'
 # Define the path to store the Tofts data
 path_store = '/data/prostate/pre-processing/lemaitre-2016-nov/tofts-features-patient-aif'
 
@@ -45,15 +43,10 @@ for id_patient in id_patient_list:
     path_patients_list_gt.append([os.path.join(path_patients, id_patient,
                                                path_gt)])
 
-# # TEMPORARY FOR RE-COMPUTING SOME PATIENTS
-# path_patients_list_dce = path_patients_list_dce[10:]
-# path_patients_list_gt = path_patients_list_gt[10:]
-# id_patient_list = id_patient_list[10:]
-
 for p_dce, p_gt, pat in zip(path_patients_list_dce, path_patients_list_gt,
                             id_patient_list):
 
-    print 'Processing patient #{}'.format(pat)
+    print 'Processing #{}'.format(pat)
 
     # Create the Tofts Extractor
     tofts_ext = ToftsQuantificationExtraction(DCEModality(), T10, CA)
