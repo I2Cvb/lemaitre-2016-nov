@@ -109,6 +109,7 @@ ax = fig.add_subplot(111)
 method_tpr_mean = []
 method_tpr_std = []
 method_auc = []
+method_auc_std = []
 
 for fresults in filename_results:
     # Load the results
@@ -117,6 +118,7 @@ for fresults in filename_results:
     config_tpr_mean = []
     config_tpr_std = []
     config_auc = []
+    config_auc_std = []
 
     # Go for each configuration
     for idx_c, (result_cv, gt_label_cv) in enumerate(zip(result_config,
@@ -129,6 +131,7 @@ for fresults in filename_results:
         # Initilise the mean roc
         mean_tpr = []
         mean_fpr = np.linspace(0, 1, 30)
+        auc_pat = []
 
         # Go for each cross-validation iteration
         for idx_cv, (res_itr, gt_itr) in enumerate(zip(result_cv, gt_label_cv)):
@@ -139,6 +142,7 @@ for fresults in filename_results:
             # Compute the mean ROC
             mean_tpr.append(interp(mean_fpr, res_itr[2].fpr, res_itr[2].tpr))
             mean_tpr[idx_cv][0] = 0.0
+            auc_pat.append(auc(mean_fpr, mean_tpr[-1]))
 
         avg_tpr = np.mean(mean_tpr, axis=0)
         std_tpr = np.std(mean_tpr, axis=0)
@@ -146,10 +150,12 @@ for fresults in filename_results:
         config_tpr_mean.append(avg_tpr)
         config_tpr_std.append(std_tpr)
         config_auc.append(auc(mean_fpr, avg_tpr))
+        config_auc_std.append(np.std(auc_pat))
 
     method_tpr_mean.append(config_tpr_mean)
     method_tpr_std.append(config_tpr_std)
     method_auc.append(config_auc)
+    method_auc_std.append(config_auc_std)
 
 
 label_figure = ['Brix ',
@@ -169,8 +175,8 @@ for idx_c, j in enumerate(range(len(config))):
     for i in range(len(method_tpr_mean)):
 
         ax.plot(mean_fpr, method_tpr_mean[i][j],
-                label=label_figure[i] + '- AUC = {:1.4f}'.format(
-                    method_auc[i][j]),
+                label=label_figure[i] + r'- AUC $= {:1.3f} \pm {:1.3f}$'.format(
+                    method_auc[i][j], method_auc_std[i][j]),
                 lw=2)
         ax.fill_between(mean_fpr, method_tpr_mean[i][j]+method_tpr_std[i][j],
                         method_tpr_mean[i][j]-method_tpr_std[i][j],
