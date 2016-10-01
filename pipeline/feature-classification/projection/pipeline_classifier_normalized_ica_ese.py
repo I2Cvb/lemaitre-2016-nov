@@ -1,13 +1,13 @@
 """
 This pipeline is used to classify enhacement signals have been normalized and
-projected using PCA.
+projected using ICA.
 """
 
 import os
 
 import numpy as np
 
-from sklearn.decomposition import PCA
+from sklearn.decomposition import FastICA
 from sklearn.externals import joblib
 from sklearn.preprocessing import label_binarize
 
@@ -89,51 +89,57 @@ n_jobs = 48
 config = [{'classifier_str': 'random-forest', 'n_estimators': 100,
            'gs_n_jobs': n_jobs}]
 
+n_comp = [2, 4, 8, 16, 24, 32, 36]
+
 result_config = []
 for c in config:
-    result_cv = []
-    # Go for LOPO cross-validation
-    for idx_lopo_cv in range(len(id_patient_list)):
 
-        # Display some information about the LOPO-CV
-        print 'Round #{} of the LOPO-CV'.format(idx_lopo_cv + 1)
+    results_sp = []
+    for cp in n_comp:
 
-        # Get the testing data
-        testing_data = data[idx_lopo_cv]
-        testing_label = label_binarize(label[idx_lopo_cv], [0, 255])
-        print 'Create the testing set ...'
+        result_cv = []
+        # Go for LOPO cross-validation
+        for idx_lopo_cv in range(len(id_patient_list)):
 
-        # Create the training data and label
-        training_data = [arr for idx_arr, arr in enumerate(data)
-                         if idx_arr != idx_lopo_cv]
-        training_label = [arr for idx_arr, arr in enumerate(label)
-                          if idx_arr != idx_lopo_cv]
-        # Concatenate the data
-        training_data = np.vstack(training_data)
-        training_label = label_binarize(
-            np.hstack(training_label).astype(int),
-            [0, 255])
-        print 'Create the training set ...'
+            # Display some information about the LOPO-CV
+            print 'Round #{} of the LOPO-CV'.format(idx_lopo_cv + 1)
 
-        # Learn the dicitionary using PCA
-        pca = PCA(n_components='mle', whiten=True)
-        training_data_projected = pca.fit_transform(training_data)
-        print 'The number of components selected is {}'.format(pca.components_)
+            # Get the testing data
+            testing_data = data[idx_lopo_cv]
+            testing_label = label_binarize(label[idx_lopo_cv], [0, 255])
+            print 'Create the testing set ...'
 
-        # Project the testing data
-        testing_data_projected = pca.transform(testing_data)
+            # Create the training data and label
+            training_data = [arr for idx_arr, arr in enumerate(data)
+                             if idx_arr != idx_lopo_cv]
+            training_label = [arr for idx_arr, arr in enumerate(label)
+                              if idx_arr != idx_lopo_cv]
+            # Concatenate the data
+            training_data = np.vstack(training_data)
+            training_label = label_binarize(
+                np.hstack(training_label).astype(int),
+                [0, 255])
+            print 'Create the training set ...'
 
-        # Perform the classification for the current cv and the
-        # given configuration
-        result_cv.append(Classify(training_data_projected, training_label,
-                                  testing_data_projected, testing_label,
-                                  **c))
+            # Learn the dicitionary using ICA
+            ica = FastICA(n_components=cp)
+            training_data_projected = ica.fit_transform(training_data)
+
+            # Project the testing data
+            testing_data_projected = ica.transform(testing_data)
+
+            # Perform the classification for the current cv and the
+            # given configuration
+            result_cv.append(Classify(training_data_projected, training_label,
+                                      testing_data_projected, testing_label,
+                                      **c))
+        results_sp.append(result_cv)
 
 # Concatenate the results per configuration
-result_config.append(result_cv)
+result_config.append(results_sp)
 
 # Save the information
-path_store = '/data/prostate/results/lemaitre-2016-nov/pca'
+path_store = '/data/prostate/results/lemaitre-2016-nov/ica'
 if not os.path.exists(path_store):
     os.makedirs(path_store)
 joblib.dump(result_config, os.path.join(path_store,
