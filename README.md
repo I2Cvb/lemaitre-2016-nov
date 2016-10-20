@@ -1,5 +1,8 @@
 Automatic prostate cancer detection through DCE-MRI images: all you need is a good normalization
-===================================================================================
+================================================================================================
+
+These pipelines are related to the following [article](https://github.com/glemaitre/dce-normalization/blob/master/main.pdf)
+The data used for this research are publicly available on [Zenodo](https://zenodo.org/record/61163#.WAjskrXPFQs)
 
 How to use the pipeline?
 ------------------------
